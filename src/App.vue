@@ -23,11 +23,12 @@
       :rules="emailRules"
     ></ValidateInput>
   </ValidateForm>
+  <DatePicker v-model="now" />
 </template>
 
 <script lang="ts">
 import "bootstrap/dist/css/bootstrap.min.css";
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, reactive } from "vue";
 
 export default defineComponent({
   name: "App",
@@ -51,11 +52,13 @@ export default defineComponent({
     const btnFn = function () {
       console.log(1);
     };
+    const now = reactive(new Date());
     return {
       name,
       btnFn,
       nameRules,
       emailRules,
+      now,
     };
   },
 });

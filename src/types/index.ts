@@ -8,4 +8,4 @@ export type type =
   | "light"
   | "dark";
 
-export type size = "sm" | "lg"
+export type size = "sm" | "lg";
