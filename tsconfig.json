@@ -23,7 +23,7 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx",
-    "src/lib/DatePicker/util.js"
+    "src/lib/DatePicker/util.ts"
   ],
   "exclude": ["node_modules"]
 }

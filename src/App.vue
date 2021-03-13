@@ -9,7 +9,7 @@
     <dropdown-item>选项二</dropdown-item>
     <dropdown-item>选项三</dropdown-item>
   </dropdown> -->
-  <ValidateForm style="width: 300px">
+  <!-- <ValidateForm style="width: 300px">
     <ValidateInput
       v-model="name"
       type="input"
@@ -22,13 +22,13 @@
       placeholder="请输入邮箱"
       :rules="emailRules"
     ></ValidateInput>
-  </ValidateForm>
-  <DatePicker v-model="now" />
+  </ValidateForm> -->
+  <DatePicker v-model="dateValue" />
 </template>
 
 <script lang="ts">
 import "bootstrap/dist/css/bootstrap.min.css";
-import { defineComponent, ref, reactive } from "vue";
+import { defineComponent, ref } from "vue";
 
 export default defineComponent({
   name: "App",
@@ -39,28 +39,28 @@ export default defineComponent({
       {
         type: "required",
         message: "name必填",
-        trigger: "blur",
-      },
+        trigger: "blur"
+      }
     ];
     const emailRules = [
       {
         type: "email",
         message: "name必填",
-        trigger: "change",
-      },
+        trigger: "change"
+      }
     ];
     const btnFn = function () {
       console.log(1);
     };
-    const now = reactive(new Date());
+    const dateValue = ref(new Date());
     return {
       name,
       btnFn,
       nameRules,
       emailRules,
-      now,
+      dateValue
     };
-  },
+  }
 });
 </script>
 

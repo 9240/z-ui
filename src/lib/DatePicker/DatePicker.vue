@@ -1,14 +1,12 @@
 <template>
-  <div v-click-outside>
-    <input type="text" :value="formatDate" />
+  <div ref="datePickerRef">
+    <input type="text" :value="formatDate" @click="toggleOpen" />
     <div v-show="isVisible" class="pannel">
       <div class="pannel-nav">
-        <span>&lt;</span>
-        <span @click="prevMonth">&lt;&lt;</span>
+        <span @click="prevMonth">&lt;</span>
         <span>{{ time.year }}年</span>
         <span>{{ time.month + 1 }}月</span>
-        <span @click="nextMonth">&gt;&gt;</span>
-        <span>&gt;</span>
+        <span @click="nextMonth">&gt;</span>
       </div>
       <div class="pannel-content">
         <div class="days">
@@ -25,14 +23,14 @@
                 {
                   notCurrentMonth: !isCurrentMonth(
                     visibleDays[(i - 1) * 7 + (j - 1)]
-                  ),
+                  )
                 },
                 {
-                  today: isToday(visibleDays[(i - 1) * 7 + (j - 1)]),
+                  today: isToday(visibleDays[(i - 1) * 7 + (j - 1)])
                 },
                 {
-                  select: isSelect(visibleDays[(i - 1) * 7 + (j - 1)]),
-                },
+                  select: isSelect(visibleDays[(i - 1) * 7 + (j - 1)])
+                }
               ]"
               >{{ visibleDays[(i - 1) * 7 + (j - 1)].getDate() }}</span
             >
@@ -44,109 +42,107 @@
   </div>
 </template>
 
-<script>
-import * as utils from "./util.js";
-export default {
-  directives: {
-    clickOutside: {
-      bind(el, bindings, vnode) {
-        console.log(1);
-        const handler = e => {
-          if (el.contains(e.target)) {
-            if (!vnode.context.isVisible) {
-              vnode.context.foucs();
-            }
-          } else {
-            if (vnode.context.isVisible) {
-              vnode.context.blur();
-            }
-          }
-        };
-        el.handler = handler;
-        document.addEventListener("click", handler);
-      },
-      unbind(el) {
-        document.removeEventListener("click", el.handler);
-      },
-    },
-  },
+<script lang="ts">
+import { computed, defineComponent, ref, watch } from "vue";
+import * as utils from "./util";
+import useClickOutside from "@/util/useClickOutside";
+export default defineComponent({
+  name: "datepicker",
   props: {
-    value: {
+    modelValue: {
       type: Date,
-      default: () => new Date(),
-    },
+      default: () => new Date()
+    }
   },
-  data() {
-    const { year, month } = utils.getYearMonthDay(this.value);
-    return {
-      weekDays: ["日", "一", "二", "三", "四", "五", "六"],
-      time: { year, month },
-      isVisible: false, //控制面板是否可见
-    };
-  },
-  computed: {
-    visibleDays() {
-      //获取当前是周几
+  emits: ["update:modelValue"],
+  setup(props, context) {
+    const { year, month } = utils.getYearMonthDay(new Date(props.modelValue));
+    const time = ref({
+      year,
+      month
+    });
+    const weekDays = ["日", "一", "二", "三", "四", "五", "六"];
+    const formatDate = computed(() => {
+      const { year, month, day } = utils.getYearMonthDay(
+        new Date(props.modelValue)
+      );
+      return `${year}-${month + 1}-${day}`;
+    });
+    const visibleDays = computed(() => {
       const { year, month } = utils.getYearMonthDay(
-        new Date(this.time.year, this.time.month, 1)
+        new Date(time.value.year, time.value.month, 1)
       );
       const currentFirstDay = utils.getDate(year, month, 1);
       const week = currentFirstDay.getDay();
-      const startDay = currentFirstDay - week * 60 * 60 * 1000 * 24;
+      const startDay = currentFirstDay.getTime() - week * 60 * 60 * 1000 * 24;
       const arr = [];
       for (let i = 0; i < 42; i++) {
         arr.push(new Date(startDay + i * 60 * 60 * 1000 * 24));
       }
       return arr;
-    },
-    formatDate() {
-      const { year, month, day } = utils.getYearMonthDay(this.value);
-      return `${year}-${month + 1}-${day}`;
-    },
-  },
-  methods: {
-    foucs() {
-      this.isVisible = true;
-    },
-    blur() {
-      this.isVisible = false;
-    },
-    isCurrentMonth(date) {
+    });
+    const isVisible = ref<boolean>(false);
+    const datePickerRef = ref<null | HTMLElement>(null);
+    const toggleOpen = () => {
+      isVisible.value = !isVisible.value;
+    };
+    const isClickOutSide = useClickOutside(datePickerRef);
+    watch(isClickOutSide, () => {
+      if (isVisible.value && isClickOutSide.value) {
+        isVisible.value = false;
+      }
+    });
+    const isCurrentMonth = (date: Date) => {
       const { year, month } = utils.getYearMonthDay(
-        utils.getDate(this.time.year, this.time.month, 1)
+        utils.getDate(time.value.year, time.value.month, 1)
       );
       const { year: y, month: m } = utils.getYearMonthDay(date);
       return year === y && month === m;
-    },
-    isToday(date) {
+    };
+    const isToday = (date: Date) => {
       const { year, month, day } = utils.getYearMonthDay(new Date());
       const { year: y, month: m, day: d } = utils.getYearMonthDay(date);
       return year === y && month === m && day === d;
-    },
-    isSelect(date) {
-      const { year, month, day } = utils.getYearMonthDay(this.value);
+    };
+    const isSelect = (date: Date) => {
+      const { year, month, day } = utils.getYearMonthDay(
+        new Date(props.modelValue)
+      );
       const { year: y, month: m, day: d } = utils.getYearMonthDay(date);
       return year === y && month === m && day === d;
-    },
-    chooseDate(date) {
-      this.time = utils.getYearMonthDay(date);
-      this.$emit("input", date);
-      this.blur();
-    },
-    prevMonth() {
-      const d = utils.getDate(this.time.year, this.time.month, 1);
+    };
+    const chooseDate = (date: Date) => {
+      time.value = utils.getYearMonthDay(date);
+      context.emit("update:modelValue", date);
+    };
+    const prevMonth = () => {
+      const d = utils.getDate(time.value.year, time.value.month, 1);
       d.setMonth(d.getMonth() - 1);
-      this.time = utils.getYearMonthDay(d);
-    },
-    nextMonth() {
-      const d = utils.getDate(this.time.year, this.time.month, 1);
+      time.value = utils.getYearMonthDay(d);
+    };
+    const nextMonth = () => {
+      const d = utils.getDate(time.value.year, time.value.month, 1);
       d.setMonth(d.getMonth() + 1);
-      this.time = utils.getYearMonthDay(d);
-    },
-  },
-};
+      time.value = utils.getYearMonthDay(d);
+    };
+    return {
+      formatDate,
+      isVisible,
+      weekDays,
+      datePickerRef,
+      toggleOpen,
+      time,
+      visibleDays,
+      isCurrentMonth,
+      isToday,
+      isSelect,
+      chooseDate,
+      prevMonth,
+      nextMonth
+    };
+  }
+});
 </script>
-
 <style scoped>
 .pannel {
   width: 224px;
