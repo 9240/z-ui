@@ -23,14 +23,14 @@
                 {
                   notCurrentMonth: !isCurrentMonth(
                     visibleDays[(i - 1) * 7 + (j - 1)]
-                  )
+                  ),
                 },
                 {
-                  today: isToday(visibleDays[(i - 1) * 7 + (j - 1)])
+                  today: isToday(visibleDays[(i - 1) * 7 + (j - 1)]),
                 },
                 {
-                  select: isSelect(visibleDays[(i - 1) * 7 + (j - 1)])
-                }
+                  select: isSelect(visibleDays[(i - 1) * 7 + (j - 1)]),
+                },
               ]"
               >{{ visibleDays[(i - 1) * 7 + (j - 1)].getDate() }}</span
             >
@@ -51,15 +51,15 @@ export default defineComponent({
   props: {
     modelValue: {
       type: Date,
-      default: () => new Date()
-    }
+      default: () => new Date(),
+    },
   },
   emits: ["update:modelValue"],
   setup(props, context) {
     const { year, month } = utils.getYearMonthDay(new Date(props.modelValue));
     const time = ref({
       year,
-      month
+      month,
     });
     const weekDays = ["日", "一", "二", "三", "四", "五", "六"];
     const formatDate = computed(() => {
@@ -114,6 +114,7 @@ export default defineComponent({
     const chooseDate = (date: Date) => {
       time.value = utils.getYearMonthDay(date);
       context.emit("update:modelValue", date);
+      isVisible.value = false;
     };
     const prevMonth = () => {
       const d = utils.getDate(time.value.year, time.value.month, 1);
@@ -138,9 +139,9 @@ export default defineComponent({
       isSelect,
       chooseDate,
       prevMonth,
-      nextMonth
+      nextMonth,
     };
-  }
+  },
 });
 </script>
 <style scoped>
@@ -148,7 +149,7 @@ export default defineComponent({
   width: 224px;
   position: absolute;
   background: #fff;
-  box-shadow: 2px 2px 2px pink, -2px -2px 2px pink;
+  box-shadow: 2px 2px 2px #c1c1c1, -2px -2px 2px #c1c1c1;
 }
 .pannel .pannel-nav {
   height: 30px;
@@ -169,6 +170,7 @@ export default defineComponent({
   align-items: center;
   width: 32px;
   height: 32px;
+  cursor: pointer;
 }
 .pannel .pannel-content .cell-days:hover,
 .select {

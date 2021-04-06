@@ -5,9 +5,8 @@
       class="form-control"
       :class="{ 'is-invalid': inputRef.error }"
       :value="inputRef.val"
-      @blur="blurInput"
       @change="ValidateInput"
-      @input="ValidateInput"
+      @input="updateValue"
       v-bind="$attrs"
     />
     <textarea
@@ -15,9 +14,8 @@
       class="form-control"
       :class="{ 'is-invalid': inputRef.error }"
       :value="inputRef.val"
-      @blur="blurInput"
       @change="ValidateInput"
-      @input="ValidateInput"
+      @input="updateValue"
       v-bind="$attrs"
     ></textarea>
     <span v-if="inputRef.error" class="invalid-feedback">
@@ -45,15 +43,15 @@ export default defineComponent({
     modelValue: String,
     type: {
       type: String as PropType<TagType>,
-      default: "input"
-    }
+      default: "input",
+    },
   },
   inheritAttrs: false,
   setup(props, ctx) {
     const inputRef = reactive({
       val: props.modelValue || "",
       error: false,
-      message: ""
+      message: "",
     });
     const updateValue = (e: KeyboardEvent) => {
       const targetValue = (e.target as HTMLInputElement).value;
@@ -63,7 +61,7 @@ export default defineComponent({
     const ValidateInput = () => {
       console.log(props.rules);
       if (props.rules) {
-        const allPassed = props.rules.every(rule => {
+        const allPassed = props.rules.every((rule) => {
           let passed = true;
           inputRef.message = rule.message;
           switch (rule.type) {
@@ -96,9 +94,9 @@ export default defineComponent({
       inputRef,
       ValidateInput,
       ClearInput,
-      updateValue
+      updateValue,
     };
-  }
+  },
 });
 </script>
 

@@ -21,8 +21,8 @@ export default defineComponent({
   props: {
     title: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   setup() {
     const isOpen = ref(false);
@@ -40,9 +40,9 @@ export default defineComponent({
     return {
       isOpen,
       toggleOpen,
-      dropdownRef
+      dropdownRef,
     };
-  }
+  },
 });
 </script>
 

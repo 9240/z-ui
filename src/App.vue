@@ -9,7 +9,7 @@
     <dropdown-item>选项二</dropdown-item>
     <dropdown-item>选项三</dropdown-item>
   </dropdown> -->
-  <!-- <ValidateForm style="width: 300px">
+  <ValidateForm style="width: 300px">
     <ValidateInput
       v-model="name"
       type="input"
@@ -22,8 +22,8 @@
       placeholder="请输入邮箱"
       :rules="emailRules"
     ></ValidateInput>
-  </ValidateForm> -->
-  <DatePicker v-model="dateValue" />
+  </ValidateForm>
+  <!-- <DatePicker v-model="dateValue" /> -->
 </template>
 
 <script lang="ts">
@@ -39,15 +39,15 @@ export default defineComponent({
       {
         type: "required",
         message: "name必填",
-        trigger: "blur"
-      }
+        trigger: "change",
+      },
     ];
     const emailRules = [
       {
         type: "email",
-        message: "name必填",
-        trigger: "change"
-      }
+        message: "email必填",
+        trigger: "change",
+      },
     ];
     const btnFn = function () {
       console.log(1);
@@ -58,9 +58,9 @@ export default defineComponent({
       btnFn,
       nameRules,
       emailRules,
-      dateValue
+      dateValue,
     };
-  }
+  },
 });
 </script>
 
